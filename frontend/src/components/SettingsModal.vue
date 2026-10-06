@@ -87,12 +87,19 @@
               </label>
 
               <label class="field compact">
-                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    width: 100%;
+                  "
+                >
                   <span>Audio fields</span>
-                  <button 
-                    type="button" 
-                    class="secondary-action ghost" 
-                    style="padding: 2px 6px; font-size: 11px; height: auto;"
+                  <button
+                    type="button"
+                    class="secondary-action ghost"
+                    style="padding: 2px 6px; font-size: 11px; height: auto"
                     :disabled="!localSettings.anki.noteType"
                     @click="selectAllAudioFields"
                   >
@@ -210,7 +217,9 @@ const settingsValid = computed(() => {
     return false;
   }
 
-  return Boolean(anki.sentenceField || (anki.audioFields && anki.audioFields.length > 0) || anki.imageField);
+  return Boolean(
+    anki.sentenceField || (anki.audioFields && anki.audioFields.length > 0) || anki.imageField,
+  );
 });
 
 const connectionLabel = computed(() => {
@@ -243,10 +252,7 @@ async function testConnection(): Promise<void> {
 }
 
 async function loadModels(): Promise<void> {
-  const [fetchedModels, fetchedDecks] = await Promise.all([
-    getModelsWithFields(),
-    getDeckNames(),
-  ]);
+  const [fetchedModels, fetchedDecks] = await Promise.all([getModelsWithFields(), getDeckNames()]);
   modelsWithFields.value = fetchedModels;
   deckNames.value = fetchedDecks.sort();
   applyAnkiDefaults();
@@ -274,7 +280,7 @@ function updateAnkiField(field: keyof AnkiSettings, event: Event): void {
 
 function updateAnkiMultiField(field: keyof AnkiSettings, event: Event): void {
   const select = event.target as HTMLSelectElement;
-  const values = Array.from(select.selectedOptions).map(opt => opt.value);
+  const values = Array.from(select.selectedOptions).map((opt) => opt.value);
   localSettings.anki = {
     ...localSettings.anki,
     [field]: values,
@@ -312,17 +318,15 @@ function applyFieldDefaults(noteType: string): void {
       ankiSettings[setting] = fieldName;
     }
   }
-  
+
   if (localSettings.anki.audioFields.length === 0) {
-    const defaultAudio = DEFAULT_AUDIO_FIELDS.filter(f => fields.includes(f));
+    const defaultAudio = DEFAULT_AUDIO_FIELDS.filter((f) => fields.includes(f));
     if (defaultAudio.length > 0) {
       localSettings.anki.audioFields = defaultAudio;
     }
   }
 }
 </script>
-
-
 
 <style scoped>
 .toggle-switch {
@@ -344,18 +348,18 @@ function applyFieldDefaults(noteType: string): void {
   right: 0;
   bottom: 0;
   background-color: var(--line);
-  transition: .2s;
+  transition: 0.2s;
   border-radius: 20px;
 }
 .slider:before {
   position: absolute;
-  content: "";
+  content: '';
   height: 14px;
   width: 14px;
   left: 3px;
   bottom: 3px;
   background-color: white;
-  transition: .2s;
+  transition: 0.2s;
   border-radius: 50%;
 }
 input:checked + .slider {

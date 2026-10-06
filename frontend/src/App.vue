@@ -198,12 +198,7 @@ const {
 
 const sourceContext = computed(() => manifest.value?.ItemName ?? null);
 
-const {
-  sendingToAnki,
-  ankiConfigured,
-  canSendToAnki,
-  sendSelectionToAnki,
-} = useAnkiMining({
+const { sendingToAnki, ankiConfigured, canSendToAnki, sendSelectionToAnki } = useAnkiMining({
   settings,
   selectedCueIndexes,
   selectedCueCount,
