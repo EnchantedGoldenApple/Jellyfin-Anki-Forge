@@ -31,12 +31,12 @@ export function useAnkiMining(options: UseAnkiMiningOptions) {
     return Boolean(
       anki.deckName &&
       anki.noteType &&
-      (anki.sentenceField || (anki.audioFields && anki.audioFields.length > 0) || anki.imageField)
+      (anki.sentenceField || (anki.audioFields && anki.audioFields.length > 0) || anki.imageField),
     );
   });
 
   const canSendToAnki = computed(
-    () => options.selectedCueIndexes.value.size > 0 && ankiConfigured.value
+    () => options.selectedCueIndexes.value.size > 0 && ankiConfigured.value,
   );
 
   async function sendSelectionToAnki(): Promise<void> {
@@ -68,7 +68,7 @@ export function useAnkiMining(options: UseAnkiMiningOptions) {
         audioMedia.push({
           filename: audio.FileNameHint,
           data: audio.DataBase64,
-          fields: [...anki.audioFields]
+          fields: [...anki.audioFields],
         });
       }
 
@@ -81,7 +81,7 @@ export function useAnkiMining(options: UseAnkiMiningOptions) {
         pictureMedia.push({
           filename: image.FileNameHint,
           data: image.DataBase64,
-          fields: [anki.imageField]
+          fields: [anki.imageField],
         });
       }
 
@@ -89,19 +89,26 @@ export function useAnkiMining(options: UseAnkiMiningOptions) {
         updates[anki.sourceField] = options.sourceContext.value;
       }
 
-      if (Object.keys(updates).length === 0 && audioMedia.length === 0 && pictureMedia.length === 0) {
+      if (
+        Object.keys(updates).length === 0 &&
+        audioMedia.length === 0 &&
+        pictureMedia.length === 0
+      ) {
         throw new Error('No Anki fields are configured for updates.');
       }
 
       const noteId = await addNote(anki.deckName, anki.noteType, updates, audioMedia, pictureMedia);
-      options.toast.success(`Created new Anki card with ${options.selectedCues.value.length} subtitle cue(s).`, {
-        action: {
-          label: 'Browse',
-          onClick: () => {
-            void guiBrowse(`nid:${noteId}`);
+      options.toast.success(
+        `Created new Anki card with ${options.selectedCues.value.length} subtitle cue(s).`,
+        {
+          action: {
+            label: 'Browse',
+            onClick: () => {
+              void guiBrowse(`nid:${noteId}`);
+            },
           },
         },
-      });
+      );
       window.setTimeout(options.clearSelection, 1_500);
     } catch (error) {
       options.toast.error(error instanceof Error ? error.message : 'Unable to update Anki.');
@@ -117,5 +124,3 @@ export function useAnkiMining(options: UseAnkiMiningOptions) {
     sendSelectionToAnki,
   };
 }
-
-

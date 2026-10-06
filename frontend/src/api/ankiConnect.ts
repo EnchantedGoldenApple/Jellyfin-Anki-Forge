@@ -139,7 +139,7 @@ export async function addNote(
   modelName: string,
   fields: Record<string, string>,
   audio?: AnkiMedia[],
-  picture?: AnkiMedia[]
+  picture?: AnkiMedia[],
 ): Promise<number> {
   const notePayload: AddNotePayload = {
     deckName,
