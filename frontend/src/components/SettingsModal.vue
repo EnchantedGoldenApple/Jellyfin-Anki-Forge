@@ -304,11 +304,12 @@ function applyAnkiDefaults(): void {
 
 function applyFieldDefaults(noteType: string): void {
   const fields = modelsWithFields.value[noteType] ?? [];
+  const ankiSettings = localSettings.anki;
   for (const [setting, fieldName] of Object.entries(DEFAULT_FIELDS) as Array<
     [FieldSetting, string]
   >) {
-    if (fieldName && !(localSettings.anki as any)[setting] && fields.includes(fieldName)) {
-      (localSettings.anki as any)[setting] = fieldName;
+    if (fieldName && ankiSettings[setting] === '' && fields.includes(fieldName)) {
+      ankiSettings[setting] = fieldName;
     }
   }
   

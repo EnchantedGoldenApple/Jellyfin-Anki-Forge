@@ -117,10 +117,21 @@ export async function storeMediaFile(filename: string, data: string): Promise<st
   return invoke<string>('storeMediaFile', { filename, data });
 }
 
-export interface AnkiMedia {
+export interface AnkiMedia extends Record<string, JsonValue> {
   filename: string;
   data: string;
   fields: string[];
+}
+
+interface AddNotePayload {
+  deckName: string;
+  modelName: string;
+  fields: Record<string, string>;
+  options: {
+    allowDuplicate: true;
+  };
+  audio?: AnkiMedia[];
+  picture?: AnkiMedia[];
 }
 
 export async function addNote(
@@ -130,22 +141,31 @@ export async function addNote(
   audio?: AnkiMedia[],
   picture?: AnkiMedia[]
 ): Promise<number> {
+  const notePayload: AddNotePayload = {
+    deckName,
+    modelName,
+    fields,
+    options: {
+      allowDuplicate: true,
+    },
+    ...(audio !== undefined ? { audio } : {}),
+    ...(picture !== undefined ? { picture } : {}),
+  };
+
+  const note: Record<string, JsonValue> = {
+    deckName: notePayload.deckName,
+    modelName: notePayload.modelName,
+    fields: notePayload.fields,
+    options: notePayload.options,
+    ...(notePayload.audio !== undefined ? { audio: notePayload.audio } : {}),
+    ...(notePayload.picture !== undefined ? { picture: notePayload.picture } : {}),
+  };
+
   return invoke<number>('addNote', {
-    note: {
-      deckName,
-      modelName,
-      fields,
-      audio,
-      picture,
-      options: {
-        allowDuplicate: true,
-      },
-    } as any,
+    note,
   });
 }
 
 export async function guiBrowse(query: string): Promise<number[]> {
   return invoke<number[]>('guiBrowse', { query });
 }
-
-

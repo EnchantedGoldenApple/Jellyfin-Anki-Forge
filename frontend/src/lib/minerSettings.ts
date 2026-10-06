@@ -50,11 +50,20 @@ export const defaultMinerSettings: MinerSettings = {
 
 const STORAGE_KEY = 'jellyfin-miner.mining-settings';
 
+interface LegacyAnkiSettings extends Partial<AnkiSettings> {
+  audioField?: string;
+}
+
+interface PersistedMinerSettings {
+  anki?: LegacyAnkiSettings;
+  media?: Partial<MediaSettings>;
+}
+
 export function loadMinerSettings(): MinerSettings {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
-      const parsed = JSON.parse(raw) as Partial<MinerSettings>;
+      const parsed = JSON.parse(raw) as PersistedMinerSettings;
       return mergeSettings(parsed);
     }
   } catch {
@@ -68,24 +77,24 @@ export function saveMinerSettings(settings: MinerSettings): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
 }
 
-function mergeSettings(settings: any): MinerSettings {
+function mergeSettings(settings: PersistedMinerSettings): MinerSettings {
+  const persistedAnki = settings.anki ?? {};
+  const { audioField, ...ankiWithoutLegacy } = persistedAnki;
   const anki = {
     ...defaultMinerSettings.anki,
-    ...(settings.anki || {}),
+    ...ankiWithoutLegacy,
+    audioFields: ankiWithoutLegacy.audioFields ?? [],
   };
 
-  if (settings.anki && typeof settings.anki.audioField === 'string' && settings.anki.audioField !== '') {
-    anki.audioFields = [settings.anki.audioField];
-    delete anki.audioField;
-  } else if (!anki.audioFields) {
-    anki.audioFields = [];
+  if (typeof audioField === 'string' && audioField !== '') {
+    anki.audioFields = [audioField];
   }
 
   return {
     anki,
     media: {
       ...defaultMinerSettings.media,
-      ...(settings.media || {}),
+      ...(settings.media ?? {}),
     },
   };
 }
